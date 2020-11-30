@@ -4,7 +4,7 @@
   :files $ {}
     |app.main $ {}
       :ns $ quote
-        ns app.main $ :require ([] phlox.core :refer $ [] g >> render-app! handle-tree-event defcomp update-states circle rect text touch-area) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complext :refer $ [] c* c+ c- rad-point)
+        ns app.main $ :require ([] phlox.core :refer $ [] g >> render-app! handle-tree-event defcomp update-states circle rect text touch-area) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complex :refer $ [] c* c+ c- rad-point)
       :defs $ {}
         |render-page $ quote
           defn render-page ()
@@ -75,6 +75,15 @@
                   g
                     {} (:x 40) (:y 40)
                     comp-lines
+                    text
+                      c+ (:position state) ([] 0 -20)
+                      str $ round
+                        dual-balanced-ternary & $ &let
+                          v $ c- (:position state) ([] 270 270)
+                          []
+                            / (first v) 20
+                            / (- 0 $ last v) (, 20)
+                      {}
                     get dict :d
                 :actions $ {}
         |reload! $ quote
