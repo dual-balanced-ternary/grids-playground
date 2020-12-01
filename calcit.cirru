@@ -519,8 +519,8 @@
                                           |L $ {} (:type :leaf) (:by |u0) (:at 1606664750978) (:text |90)
                                   |yj $ {} (:type :expr) (:by |u0) (:at 1606664324863)
                                     :data $ {}
-                                      |T $ {} (:type :leaf) (:by |u0) (:at 1606664335873) (:text |:font-family)
-                                      |j $ {} (:type :leaf) (:by |u0) (:at 1606664341226) (:text "|\"monospace")
+                                      |T $ {} (:type :leaf) (:by |u0) (:at 1606749332548) (:text |:font-face)
+                                      |j $ {} (:type :leaf) (:by |u0) (:at 1606749351800) (:text "|\"Menlo")
                                   |r $ {} (:type :expr) (:by |u0) (:at 1606664274020)
                                     :data $ {}
                                       |T $ {} (:type :leaf) (:by |u0) (:at 1606664277242) (:text |:x)
@@ -540,6 +540,10 @@
                                     :data $ {}
                                       |T $ {} (:type :leaf) (:by |u0) (:at 1606664292689) (:text |:font-size)
                                       |j $ {} (:type :leaf) (:by |u0) (:at 1606664657680) (:text |160)
+                                  |yn $ {} (:type :expr) (:by |u0) (:at 1606749341953)
+                                    :data $ {}
+                                      |T $ {} (:type :leaf) (:by |u0) (:at 1606749344836) (:text |:font-weight)
+                                      |j $ {} (:type :leaf) (:by |u0) (:at 1606749356254) (:text "|\"normal")
                               |D $ {} (:type :leaf) (:by |u0) (:at 1606664458692) (:text |fn)
                               |L $ {} (:type :expr) (:by |u0) (:at 1606664459004)
                                 :data $ {}
@@ -826,4 +830,4 @@
                   |T $ {} (:type :leaf) (:by |u0) (:at 1606663922990) (:text |idx)
         :proc $ {} (:type :expr) (:by |u0) (:at 1606310745262) (:data $ {})
         :configs $ {} (:extension nil)
-  :configs $ {} (:extension |.cljs) (:output |src) (:port 6001) (:local-ui? false) (:compact-output? true) (:init-fn |app.main/main!) (:reload-fn |app.main/reload!) (:modules $ [] |/Users/chen/repo/quamolit/phlox.calcit/compact.cirru)
+  :configs $ {} (:extension |.cljs) (:output |src) (:port 6001) (:local-ui? false) (:compact-output? true) (:init-fn |app.main/main!) (:reload-fn |app.main/reload!) (:modules $ [] |phlox.calcit/compact.cirru)

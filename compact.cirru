@@ -1,6 +1,6 @@
 
 {} (:package |app)
-  :configs $ {} (:init-fn |app.main/main!) (:reload-fn |app.main/reload!) (:modules $ [] |/Users/chen/repo/quamolit/phlox.calcit/compact.cirru)
+  :configs $ {} (:init-fn |app.main/main!) (:reload-fn |app.main/reload!) (:modules $ [] |phlox.calcit/compact.cirru)
   :files $ {}
     |app.main $ {}
       :ns $ quote
@@ -57,7 +57,8 @@
                     :text $ :digit info
                     :font-size 160
                     :color $ [] 0 0 80 0.2
-                    :font-family "\"monospace"
+                    :font-face "\"Menlo"
+                    :font-weight "\"normal"
                     :text-align :center
         |comp-demo $ quote
           defcomp comp-demo (store)
