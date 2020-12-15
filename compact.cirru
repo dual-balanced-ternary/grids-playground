@@ -1,16 +1,14 @@
 
 {} (:package |app)
-  :configs $ {} (:init-fn |app.main/main!) (:reload-fn |app.main/reload!) (:modules $ [] |phlox.calcit/compact.cirru)
+  :configs $ {} (:init-fn |app.main/main!) (:reload-fn |app.main/reload!) (:modules $ [] |phlox/compact.cirru) (:version nil)
   :files $ {}
     |app.main $ {}
       :ns $ quote
-        ns app.main $ :require ([] phlox.core :refer $ [] g >> render-app! handle-tree-event defcomp update-states circle rect text touch-area) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complex :refer $ [] c* c+ c- rad-point)
+        ns app.main $ :require ([] phlox.core :refer $ [] >> render-app! handle-tree-event update-states) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complex :refer $ [] c* c+ c- rad-point) ([] app.comp.container :refer $ [] comp-container)
       :defs $ {}
         |render-page $ quote
           defn render-page ()
-            render-app! $ comp-demo (deref *store)
-        |digits $ quote
-          def digits $ [] ({,} :x 0 , :y 0 , :digit "\"6") ({,} :x 1 , :y 0 , :digit "\"1") ({,} :x 2 , :y 0 , :digit "\"8") ({,} :x 0 , :y 1 , :digit "\"7") ({,} :x 1 , :y 1 , :digit "\"5") ({,} :x 2 , :y 1 , :digit "\"3") ({,} :x 0 , :y 2 , :digit "\"2") ({,} :x 1 , :y 2 , :digit "\"9") ({,} :x 2 , :y 2 , :digit "\"4")
+            render-app! $ comp-container (deref *store)
         |dispatch! $ quote
           defn dispatch! (op data)
             if (list? op) (recur :states $ [] op data) (swap! *store updater op data)
@@ -29,6 +27,16 @@
             echo "\"Started"
         |on-window-event $ quote
           defn on-window-event (event) (handle-tree-event event dispatch!)
+        |reload! $ quote
+          defn reload! () (echo "\"Reload!") (render-page)
+        |on-error $ quote
+          defn on-error (message) (; draw-error-message message)
+      :proc $ quote ()
+      :configs $ {} (:extension nil)
+    |app.comp.container $ {}
+      :ns $ quote
+        ns app.comp.container $ :require ([] phlox.core :refer $ [] g >> defcomp update-states circle rect text touch-area) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complex :refer $ [] c* c+ c- rad-point)
+      :defs $ {}
         |comp-lines $ quote
           defn comp-lines ()
             g ({})
@@ -51,17 +59,26 @@
               , &
               ->> digits $ map
                 fn (info)
-                  {} (:type :text)
-                    :x $ + 50 (* 180 $ :x info)
-                    :y $ + 90 (* 180 $ :y info)
-                    :text $ :digit info
-                    :font-size 160
-                    :color $ [] 0 0 80 0.2
-                    :font-face "\"Menlo"
-                    :font-weight "\"normal"
-                    :text-align :center
-        |comp-demo $ quote
-          defcomp comp-demo (store)
+                  g
+                    [] (* 180 $ :x info) (* 180 $ :y info)
+                    text ([] 90 90) (:digit info)
+                      {} (:font-size 160) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.4) (:align :center)
+                    , &
+                    ->> digits $ map
+                      fn (info)
+                        g
+                          [] (* 60 $ :x info) (* 60 $ :y info)
+                          text ([] 30 30) (:digit info)
+                            {} (:font-size 54) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.3) (:align :center)
+                          , &
+                          ->> digits $ map
+                            fn (info)
+                              g
+                                [] (* 20 $ :x info) (* 20 $ :y info)
+                                text ([] 10 10) (:digit info)
+                                  {} (:font-size 18) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.3) (:align :center)
+        |comp-container $ quote
+          defcomp comp-container (store)
             let
                 states $ :states store
                 cursor $ :cursor states
@@ -72,25 +89,17 @@
                   :d $ comp-drag-point (>> states :d) (:position state)
                     fn (position d!) (d! cursor $ assoc state :position position)
                     {}
+                      :render-text $ fn (position) (str $ show-position position 20)
+                      :text-color $ [] 0 0 100
+                      :fill-color $ [] 0 0 100 0.4
+                      :stroke-color $ [] 0 0 100
+                      :radius 8
                 :render $ fn (dict)
                   g
                     {} (:x 40) (:y 40)
                     comp-lines
-                    text
-                      c+ (:position state) ([] 0 -20)
-                      str $ round
-                        dual-balanced-ternary & $ &let
-                          v $ c- (:position state) ([] 270 270)
-                          []
-                            / (first v) 20
-                            / (- 0 $ last v) (, 20)
-                      {}
                     get dict :d
                 :actions $ {}
-        |reload! $ quote
-          defn reload! () (echo "\"Reload!") (render-page)
-        |on-error $ quote
-          defn on-error (message) (; draw-error-message message)
         |pick-color $ quote
           defn pick-color (idx)
             cond
@@ -99,5 +108,14 @@
               (= 0 $ mod idx 3)
                 [] 0 0 55
               true $ [] 0 0 30
+        |digits $ quote
+          def digits $ [] ({,} :x 0 , :y 0 , :digit "\"6") ({,} :x 1 , :y 0 , :digit "\"1") ({,} :x 2 , :y 0 , :digit "\"8") ({,} :x 0 , :y 1 , :digit "\"7") ({,} :x 1 , :y 1 , :digit "\"5") ({,} :x 2 , :y 1 , :digit "\"3") ({,} :x 0 , :y 2 , :digit "\"2") ({,} :x 1 , :y 2 , :digit "\"9") ({,} :x 2 , :y 2 , :digit "\"4")
+        |show-position $ quote
+          defn show-position (position size)
+            round $ &let
+              v $ c- position ([] 270 270)
+              dual-balanced-ternary
+                / (first v) size
+                / (- 0 $ last v) (, size)
       :proc $ quote ()
-      :configs $ {} (:extension nil)
+      :configs $ {}
