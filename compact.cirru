@@ -4,11 +4,12 @@
   :files $ {}
     |app.main $ {}
       :ns $ quote
-        ns app.main $ :require ([] phlox.core :refer $ [] >> render-app! handle-tree-event update-states) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complex :refer $ [] c* c+ c- rad-point) ([] app.comp.container :refer $ [] comp-container) ([] memof.alias :refer $ [] clear-memof-caches!)
+        ns app.main $ :require ([] phlox.core :refer $ [] >> render-app! handle-tree-event update-states) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complex :refer $ [] c* c+ c- rad-point) ([] app.comp.container :refer $ [] comp-container) ([] memof.alias :refer $ [] reset-calling-caches! tick-calling-loop!)
       :defs $ {}
         |render-page $ quote
           defn render-page ()
             render-app! $ comp-container (deref *store)
+            tick-calling-loop!
         |dispatch! $ quote
           defn dispatch! (op data)
             if (list? op) (recur :states $ [] op data) (swap! *store updater op data)
@@ -28,7 +29,7 @@
         |on-window-event $ quote
           defn on-window-event (event) (handle-tree-event event dispatch!)
         |reload! $ quote
-          defn reload! () (echo "\"Reload!") (clear-memof-caches!) (render-page)
+          defn reload! () (echo "\"Reload!") (reset-calling-caches!) (render-page)
         |on-error $ quote
           defn on-error (message) (; draw-error-message message)
       :proc $ quote ()
@@ -78,8 +79,8 @@
                 / (first v) size
                 / (- 0 $ last v) (, size)
         |render-grids $ quote
-          defn render-grids ()
-            g ({})
+          defn render-grids () (echo "\"actual rendering")
+            g ({} $ :pure-shape? true)
               {} (:type :ops)
                 :ops $ concat
                   [] ([] :line-width 1) ([] :hsl $ [] 0 0 100)

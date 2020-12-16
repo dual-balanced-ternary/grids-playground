@@ -63,7 +63,8 @@
                     |v $ {} (:type :expr) (:by |u0) (:at 1608010200234)
                       :data $ {}
                         |T $ {} (:type :leaf) (:by |u0) (:at 1608010200401) (:text |[])
-                        |j $ {} (:type :leaf) (:by |u0) (:at 1608010204276) (:text |clear-memof-caches!)
+                        |j $ {} (:type :leaf) (:by |u0) (:at 1608094322242) (:text |reset-calling-caches!)
+                        |r $ {} (:type :leaf) (:by |u0) (:at 1608094331891) (:text |tick-calling-loop!)
         :defs $ {}
           |render-page $ {} (:type :expr) (:by |u0) (:at 1606311428786)
             :data $ {}
@@ -80,6 +81,9 @@
                         :data $ {}
                           |T $ {} (:type :leaf) (:by |u0) (:at 1606370639994) (:text |deref)
                           |j $ {} (:type :leaf) (:by |u0) (:at 1606370639994) (:text |*store)
+              |x $ {} (:type :expr) (:by |u0) (:at 1608094338020)
+                :data $ {}
+                  |T $ {} (:type :leaf) (:by |u0) (:at 1608094338334) (:text |tick-calling-loop!)
           |dispatch! $ {} (:type :expr) (:by |u0) (:at 1606311413451)
             :data $ {}
               |T $ {} (:type :leaf) (:by |u0) (:at 1606311413451) (:text |defn)
@@ -234,7 +238,7 @@
                   |T $ {} (:type :leaf) (:by |u0) (:at 1606370676396) (:text |render-page)
               |w $ {} (:type :expr) (:by |u0) (:at 1608010186294)
                 :data $ {}
-                  |T $ {} (:type :leaf) (:by |u0) (:at 1608010193059) (:text |clear-memof-caches!)
+                  |T $ {} (:type :leaf) (:by |u0) (:at 1608094317621) (:text |reset-calling-caches!)
           |on-error $ {} (:type :expr) (:by |u0) (:at 1606310757107)
             :data $ {}
               |T $ {} (:type :leaf) (:by |u0) (:at 1606310757107) (:text |defn)
@@ -439,7 +443,7 @@
                                   |p $ {} (:type :expr) (:by |u0) (:at 1608009952627)
                                     :data $ {}
                                       |T $ {} (:type :leaf) (:by |u0) (:at 1608010011893) (:text |render-grids)
-                                      |D $ {} (:type :leaf) (:by |u0) (:at 1608010054891) (:text |memof-call)
+                                      |D $ {} (:type :leaf) (:by |u0) (:at 1608094464650) (:text |memof-call)
                       |v $ {} (:type :expr) (:by |u0) (:at 1606313929051)
                         :data $ {}
                           |T $ {} (:type :leaf) (:by |u0) (:at 1606313930056) (:text |:actions)
@@ -846,6 +850,10 @@
                   |L $ {} (:type :expr) (:by |u0) (:at 1606664159781)
                     :data $ {}
                       |T $ {} (:type :leaf) (:by |u0) (:at 1606664160065) (:text |{})
+                      |j $ {} (:type :expr) (:by |u0) (:at 1608094369753)
+                        :data $ {}
+                          |T $ {} (:type :leaf) (:by |u0) (:at 1608094372769) (:text |:pure-shape?)
+                          |j $ {} (:type :leaf) (:by |u0) (:at 1608094373990) (:text |true)
                   |j $ {} (:type :expr) (:by |u0) (:at 1606664442057)
                     :data $ {}
                       |T $ {} (:type :expr) (:by |u0) (:at 1606664453825)
@@ -1079,6 +1087,10 @@
                   |b $ {} (:type :leaf) (:by |u0) (:at 1606664444052) (:text |&)
                   |D $ {} (:type :leaf) (:by |u0) (:at 1606664159211) (:text |g)
               |n $ {} (:type :expr) (:by |u0) (:at 1606664115368) (:data $ {})
+              |p $ {} (:type :expr) (:by |u0) (:at 1608094298571)
+                :data $ {}
+                  |T $ {} (:type :leaf) (:by |u0) (:at 1608094300224) (:text |echo)
+                  |j $ {} (:type :leaf) (:by |u0) (:at 1608094303297) (:text "|\"actual rendering")
         :proc $ {} (:type :expr) (:by |u0) (:at 1607939260384) (:data $ {})
         :configs $ {}
   :configs $ {} (:extension |.cljs) (:output |src) (:port 6001) (:local-ui? false) (:compact-output? true) (:init-fn |app.main/main!) (:reload-fn |app.main/reload!) (:modules $ [] |phlox/compact.cirru |lilac/compact.cirru |memof/compact.cirru)
