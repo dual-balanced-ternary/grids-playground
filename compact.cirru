@@ -84,29 +84,75 @@
           defcomp comp-division (states)
             let
                 cursor $ :cursor states
-                state $ either (:data states) ({} $ :angle 0)
-                lean $ fn (p)
-                  c* ([] 1.5 0)
-                    c* p $ [] (cos $ :angle state) (sin $ :angle state)
+                unit 243
+                state $ either (:data states)
+                  {}
+                    :divisor $ [] 0 (- 0 unit)
+                    :dividend $ [] 0 (- 0 unit)
+                divisor-value $ c* (:divisor state)
+                  [] (/ 1 unit) 0
+                dividend-value $ c* (:dividend state)
+                  [] (/ 1 unit) 0
+                quotient $ &/ (dual-balanced-ternary & dividend-value) (dual-balanced-ternary & divisor-value)
+                lean $ fn (p) (c* p divisor-value)
                 color $ [] 0 0 90
+                digits $ ->> (dbt-digits quotient)
+                  map $ fn (pair)
+                    [] (first pair) (dbt->point $ last pair)
               {}
                 :children $ {}
-                  :angle $ comp-slider (>> states :angle) ([] 240 -40) (:angle state)
-                    fn (v d!) (d! cursor $ assoc state :angle v)
-                    {} $ :unit 0.001
+                  :divisor $ comp-drag-point (>> states :divisor) (:divisor state)
+                    fn (position d!) (d! cursor $ assoc state :divisor position)
+                    {}
+                      :render-text $ fn (position)
+                        dual-balanced-ternary
+                          / (first position) 243
+                          / (- 0 $ last position) (, 243)
+                      :text-color $ [] 0 0 100
+                      :fill-color $ [] 0 0 100 0
+                      :stroke-color $ [] 0 0 100 0.6
+                      :radius 8
+                  :dividend $ comp-drag-point (>> states :dividend) (:dividend state)
+                    fn (position d!) (d! cursor $ assoc state :dividend position)
+                    {}
+                      :render-text $ fn (position)
+                        dual-balanced-ternary
+                          / (first position) 243
+                          / (- 0 $ last position) (, 243)
+                      :text-color $ [] 0 0 100
+                      :fill-color $ [] 0 0 100 0
+                      :stroke-color $ [] 0 0 100 0.6
+                      :radius 8
                 :actions $ {}
                 :render $ fn (dict)
-                  g ({}) (get dict :angle)
+                  g ({})
                     g
-                      {} $ :position ([] 300 300)
-                      render-grids-cell ([] 0 0) 81 ([] 240 80 50) identity
-                      render-grids-cell ([] 0 0) 81 color lean
-                      render-grids-cell
-                        c* ([] 81 0) ([] 1 0)
-                        , 27 color lean
-                      render-grids-cell ([] 108 -27) 9 color lean
-                      render-grids-cell ([] 108 -36) 3 color lean
-                      render-grids-cell ([] 108 -39) 1 color lean
+                      {} $ :position ([] 360 280)
+                      render-grids-cell ([] 0 0) 243 ([] 240 80 50) identity
+                      text ([] 0 0) (round quotient 8)
+                        {} $ :color ([] 0 0 50)
+                      , &
+                      apply
+                        fn (acc base xs)
+                          if
+                            or (empty? xs)
+                              <
+                                either (first $ first xs) (, -99)
+                                , -5
+                            , acc
+                            let
+                                pair $ first xs
+                                pos $ first pair
+                                point $ last pair
+                              recur
+                                conj acc $ render-grids-cell base (* unit $ pow 3 pos) (, color lean)
+                                c+ base $ c*
+                                  c* point $ do (; "\"dbt uses y+ as main direction, while cartesian coordinates uses x+. unclear about details...") ([] 0 -1)
+                                  [] (* unit $ pow 3 pos) (, 0)
+                                rest xs
+                        [] ([]) ([] 0 0) (, digits)
+                      get dict :dividend
+                      get dict :divisor
         |show-position $ quote
           defn show-position (position size)
             round $ &let
@@ -154,6 +200,7 @@
                       :text-color $ [] 0 0 100
                       :fill-color $ [] 0 0 100 0
                       :stroke-color $ [] 0 0 100 0.6
+                      :line-width 2
                       :radius 12
                 :render $ fn (dict)
                   g ({}) (get dict :d) (memof-call render-grids)
