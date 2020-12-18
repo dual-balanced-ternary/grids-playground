@@ -38,48 +38,10 @@
       :ns $ quote
         ns app.comp.container $ :require ([] phlox.core :refer $ [] g >> defcomp update-states circle rect text touch-area) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complex :refer $ [] c* c+ c- rad-point) ([] memof.alias :refer $ [] memof-call)
       :defs $ {}
-        |comp-container $ quote
-          defcomp comp-container (store)
-            let
-                states $ :states store
-                cursor $ :cursor states
-                state $ either (:data states)
-                  {} $ :position ([] 40 40)
-              {}
-                :children $ {}
-                  :d $ comp-drag-point (>> states :d) (:position state)
-                    fn (position d!) (d! cursor $ assoc state :position position)
-                    {}
-                      :render-text $ fn (position) (str $ show-position position 20)
-                      :text-color $ [] 0 0 100
-                      :fill-color $ [] 0 0 100 0
-                      :stroke-color $ [] 0 0 100 0.6
-                      :radius 12
-                :render $ fn (dict)
-                  g
-                    {} (:x 40) (:y 40)
-                    memof-call render-grids
-                    get dict :d
-                :actions $ {}
-        |pick-color $ quote
-          defn pick-color (idx)
-            cond
-                = 0 $ mod idx 9
-                [] 0 0 80
-              (= 0 $ mod idx 3)
-                [] 0 0 55
-              true $ [] 0 0 30
         |digits $ quote
           def digits $ [] ({,} :x 0 , :y 0 , :digit "\"6") ({,} :x 1 , :y 0 , :digit "\"1") ({,} :x 2 , :y 0 , :digit "\"8") ({,} :x 0 , :y 1 , :digit "\"7") ({,} :x 1 , :y 1 , :digit "\"5") ({,} :x 2 , :y 1 , :digit "\"3") ({,} :x 0 , :y 2 , :digit "\"2") ({,} :x 1 , :y 2 , :digit "\"9") ({,} :x 2 , :y 2 , :digit "\"4")
-        |show-position $ quote
-          defn show-position (position size)
-            round $ &let
-              v $ c- position ([] 270 270)
-              dual-balanced-ternary
-                / (first v) size
-                / (- 0 $ last v) (, size)
         |render-grids $ quote
-          defn render-grids () (echo "\"actual rendering")
+          defn render-grids ()
             g ({} $ :pure-shape? true)
               {} (:type :ops)
                 :ops $ concat
@@ -118,5 +80,183 @@
                                 [] (* 20 $ :x info) (* 20 $ :y info)
                                 text ([] 10 10) (:digit info)
                                   {} (:font-size 18) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.3) (:align :center)
+        |comp-division $ quote
+          defcomp comp-division (states)
+            let
+                cursor $ :cursor states
+                unit 243
+                state $ either (:data states)
+                  {}
+                    :divisor $ [] 0 (- 0 unit)
+                    :dividend $ [] 0 (- 0 unit)
+                divisor-value $ c* (:divisor state)
+                  [] (/ 1 unit) 0
+                dividend-value $ c* (:dividend state)
+                  [] (/ 1 unit) 0
+                quotient $ &/ (dual-balanced-ternary & dividend-value) (dual-balanced-ternary & divisor-value)
+                lean $ fn (p) (c* p divisor-value)
+                color $ [] 0 0 90
+                digits $ ->> (dbt-digits quotient)
+                  map $ fn (pair)
+                    [] (first pair) (dbt->point $ last pair)
+              {}
+                :children $ {}
+                  :divisor $ comp-drag-point (>> states :divisor) (:divisor state)
+                    fn (position d!) (d! cursor $ assoc state :divisor position)
+                    {}
+                      :render-text $ fn (position)
+                        dual-balanced-ternary
+                          / (first position) 243
+                          / (- 0 $ last position) (, 243)
+                      :text-color $ [] 0 0 100
+                      :fill-color $ [] 0 0 100 0
+                      :stroke-color $ [] 0 0 100 0.6
+                      :radius 8
+                  :dividend $ comp-drag-point (>> states :dividend) (:dividend state)
+                    fn (position d!) (d! cursor $ assoc state :dividend position)
+                    {}
+                      :render-text $ fn (position)
+                        dual-balanced-ternary
+                          / (first position) 243
+                          / (- 0 $ last position) (, 243)
+                      :text-color $ [] 0 0 100
+                      :fill-color $ [] 0 0 100 0
+                      :stroke-color $ [] 0 0 100 0.6
+                      :radius 8
+                :actions $ {}
+                :render $ fn (dict)
+                  g ({})
+                    g
+                      {} $ :position ([] 360 280)
+                      render-grids-cell ([] 0 0) 243 ([] 240 80 50) identity
+                      text ([] 0 0) (round quotient 8)
+                        {} $ :color ([] 0 0 50)
+                      , &
+                      apply
+                        fn (acc base xs)
+                          if
+                            or (empty? xs)
+                              <
+                                either (first $ first xs) (, -99)
+                                , -5
+                            , acc
+                            let
+                                pair $ first xs
+                                pos $ first pair
+                                point $ last pair
+                              recur
+                                conj acc $ render-grids-cell base (* unit $ pow 3 pos) (, color lean)
+                                c+ base $ c*
+                                  c* point $ do (; "\"dbt uses y+ as main direction, while cartesian coordinates uses x+. unclear about details...") ([] 0 -1)
+                                  [] (* unit $ pow 3 pos) (, 0)
+                                rest xs
+                        [] ([]) ([] 0 0) (, digits)
+                      get dict :dividend
+                      get dict :divisor
+        |show-position $ quote
+          defn show-position (position size)
+            round $ &let
+              v $ c- position ([] 270 270)
+              dual-balanced-ternary
+                / (first v) size
+                / (- 0 $ last v) (, size)
+        |comp-tabs $ quote
+          defcomp comp-tabs (states tab on-change)
+            let
+                cursor $ :cursor states
+              {} (:children $ {})
+                :actions $ {}
+                  :select $ fn (e d!)
+                    on-change (turn-keyword $ :data e) (, d!)
+                :render $ fn (dict)
+                  g
+                    {} $ :position ([] 40 40)
+                    , &
+                    ->> ([] :grids :division)
+                      map-indexed $ fn (idx name)
+                        g ({})
+                          touch-area :select cursor $ {} (:radius 8)
+                            :position $ [] (* 100 idx) 0
+                            :dx 40
+                            :dy 16
+                            :rect? true
+                            :data name
+                          text
+                            [] (* 100 idx) 0
+                            turn-string name
+                            {} $ :align :center
+        |comp-grids-area $ quote
+          defcomp comp-grids-area (states)
+            let
+                cursor $ :cursor states
+                state $ either (:data states)
+                  {} $ :position ([] 40 40)
+              {}
+                :children $ {}
+                  :d $ comp-drag-point (>> states :d) (:position state)
+                    fn (position d!) (d! cursor $ assoc state :position position)
+                    {}
+                      :render-text $ fn (position) (str $ show-position position 20)
+                      :text-color $ [] 0 0 100
+                      :fill-color $ [] 0 0 100 0
+                      :stroke-color $ [] 0 0 100 0.6
+                      :line-width 2
+                      :radius 12
+                :render $ fn (dict)
+                  g ({}) (get dict :d) (memof-call render-grids)
+                :actions $ {}
+        |comp-container $ quote
+          defcomp comp-container (store)
+            let
+                states $ :states store
+                cursor $ :cursor states
+                state $ either (:data states) ({} $ :tab :grids)
+              {}
+                :children $ {}
+                  :grids $ if (= :grids $ :tab state) (comp-grids-area $ >> states :grids)
+                  :tabs $ comp-tabs (>> states :tabs) (:tab state)
+                    fn (new-tab d!) (d! cursor $ assoc state :tab new-tab)
+                  :division $ if (= :division $ :tab state) (comp-division $ >> states :division)
+                :render $ fn (dict)
+                  g
+                    {} (:x 40) (:y 20)
+                    get dict :tabs
+                    g
+                      {} $ :position ([] 0 80)
+                      if (some? $ :tab state) (get dict $ :tab state)
+                :actions $ {}
+        |render-grids-cell $ quote
+          defn render-grids-cell (base unit color lean)
+            g
+              {} $ :position (lean base)
+              {} (:type :ops)
+                :ops $ concat
+                  ->> (range 4)
+                    mapcat $ fn (i0)
+                      let
+                          i $ - i0 1.5
+                        []
+                          [] :move-to $ lean
+                            [] (* unit i) (* unit -1.5)
+                          [] :line-to $ lean
+                            [] (* unit i) (* unit 1.5)
+                  ->> (range 4)
+                    mapcat $ fn (i0)
+                      let
+                          i $ - i0 1.5
+                        []
+                          [] :move-to $ lean
+                            [] (* unit -1.5) (* unit i)
+                          [] :line-to $ lean
+                            [] (* unit 1.5) (* unit i)
+                  [] ([] :hsl color) ([] :stroke)
+        |pick-color $ quote
+          defn pick-color (idx)
+            cond
+                = 0 $ mod idx 9
+                [] 0 0 80
+              (= 0 $ mod idx 3)
+                [] 0 0 55
+              true $ [] 0 0 30
       :proc $ quote ()
       :configs $ {}
