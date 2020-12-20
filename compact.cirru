@@ -153,8 +153,8 @@
                         [] ([]) ([] 0 0) (, digits)
                       get dict :dividend
                       get dict :divisor
-        |show-position $ quote
-          defn show-position (position size)
+        |calc-dbt $ quote
+          defn calc-dbt (position size)
             round $ &let
               v $ c- position ([] 270 270)
               dual-balanced-ternary
@@ -185,25 +185,55 @@
                             [] (* 100 idx) 0
                             turn-string name
                             {} $ :align :center
+        |calc-pos $ quote
+          defn calc-pos (p size)
+            c+
+              c* (conjugate $ dbt->point p) ([] size 0)
+              [] 270 270
+        |conjugate $ quote
+          defn conjugate (p)
+            [] (first p) (&- 0 $ last p)
         |comp-grids-area $ quote
           defcomp comp-grids-area (states)
             let
                 cursor $ :cursor states
                 state $ either (:data states)
-                  {} $ :position ([] 40 40)
+                  {} (:a $ [] 40 40) (:b $ [] 0 0)
+                unit 20
+                a $ calc-dbt (:a state) unit
+                b $ calc-dbt (:b state) unit
+                sum $ &+ a b
+                product $ &* a b
               {}
                 :children $ {}
-                  :d $ comp-drag-point (>> states :d) (:position state)
-                    fn (position d!) (d! cursor $ assoc state :position position)
+                  :a $ comp-drag-point (>> states :a) (:a state)
+                    fn (position d!) (d! cursor $ assoc state :a position)
                     {}
-                      :render-text $ fn (position) (str $ show-position position 20)
+                      :render-text $ fn (position) (str $ calc-dbt position unit)
                       :text-color $ [] 0 0 100
                       :fill-color $ [] 0 0 100 0
-                      :stroke-color $ [] 0 0 100 0.6
+                      :stroke-color $ [] 0 90 70
                       :line-width 2
-                      :radius 12
+                      :radius 8
+                  :b $ comp-drag-point (>> states :b) (:b state)
+                    fn (position d!) (d! cursor $ assoc state :b position)
+                    {}
+                      :render-text $ fn (position) (str $ calc-dbt position unit)
+                      :text-color $ [] 0 0 100
+                      :fill-color $ [] 0 0 100 0
+                      :stroke-color $ [] 200 90 70
+                      :line-width 2
+                      :radius 8
                 :render $ fn (dict)
-                  g ({}) (get dict :d) (memof-call render-grids)
+                  g ({}) (memof-call render-grids) (get dict :a) (get dict :b)
+                    g
+                      {} (:position $ calc-pos sum unit) (:pure-shape? true)
+                      {} (:type :arc) (:fill-color $ [] 0 0 100 0.5) (:radius 4)
+                      text ([] 8 0) (str "\"Sum:" sum) ({} $ :font-size 12)
+                    g
+                      {} (:position $ calc-pos product unit) (:pure-shape? true)
+                      {} (:type :arc) (:fill-color $ [] 0 0 100 0.5) (:radius 4)
+                      text ([] 8 0) (str "\"Prod:" product) ({} $ :font-size 12)
                 :actions $ {}
         |comp-container $ quote
           defcomp comp-container (store)
