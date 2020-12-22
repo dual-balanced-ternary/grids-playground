@@ -36,7 +36,7 @@
       :configs $ {} (:extension nil)
     |app.comp.container $ {}
       :ns $ quote
-        ns app.comp.container $ :require ([] phlox.core :refer $ [] g >> defcomp update-states circle rect text touch-area) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complex :refer $ [] c* c+ c- rad-point) ([] memof.alias :refer $ [] memof-call)
+        ns app.comp.container $ :require ([] phlox.core :refer $ [] g >> defcomp update-states circle rect text touch-area ops) ([] phlox.comp :refer $ [] comp-drag-point comp-slider) ([] phlox.complex :refer $ [] c* c+ c- rad-point) ([] memof.alias :refer $ [] memof-call)
       :defs $ {}
         |digits $ quote
           def digits $ [] ({,} :x 0 , :y 0 , :digit "\"6") ({,} :x 1 , :y 0 , :digit "\"1") ({,} :x 2 , :y 0 , :digit "\"8") ({,} :x 0 , :y 1 , :digit "\"7") ({,} :x 1 , :y 1 , :digit "\"5") ({,} :x 2 , :y 1 , :digit "\"3") ({,} :x 0 , :y 2 , :digit "\"2") ({,} :x 1 , :y 2 , :digit "\"9") ({,} :x 2 , :y 2 , :digit "\"4")
@@ -64,22 +64,22 @@
                 fn (info)
                   g
                     [] (* 180 $ :x info) (* 180 $ :y info)
-                    text ([] 90 90) (:digit info)
-                      {} (:font-size 160) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.4) (:align :center)
+                    text (:digit info)
+                      {} (:font-size 160) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.4) (:align :center) (:position $ [] 90 90)
                     , &
                     ->> digits $ map
                       fn (info)
                         g
                           [] (* 60 $ :x info) (* 60 $ :y info)
-                          text ([] 30 30) (:digit info)
-                            {} (:font-size 54) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.3) (:align :center)
+                          text (:digit info)
+                            {} (:font-size 54) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.3) (:align :center) (:position $ [] 30 30)
                           , &
                           ->> digits $ map
                             fn (info)
                               g
                                 [] (* 20 $ :x info) (* 20 $ :y info)
-                                text ([] 10 10) (:digit info)
-                                  {} (:font-size 18) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.3) (:align :center)
+                                text (:digit info)
+                                  {} (:font-size 18) (:font-face "\"Menlo") (:font-weight "\"normal") (:color $ [] 0 0 80 0.3) (:align :center) (:position $ [] 10 10)
         |comp-division $ quote
           defcomp comp-division (states)
             let
@@ -125,34 +125,33 @@
                       :radius 8
                 :actions $ {}
                 :render $ fn (dict)
-                  g ({})
-                    g
-                      {} $ :position ([] 360 280)
-                      render-grids-cell ([] 0 0) 243 ([] 240 80 50) identity
-                      text ([] 0 0) (round quotient 8)
-                        {} $ :color ([] 0 0 50)
-                      , &
-                      apply
-                        fn (acc base xs)
-                          if
-                            or (empty? xs)
-                              <
-                                either (first $ first xs) (, -99)
-                                , -5
-                            , acc
-                            let
-                                pair $ first xs
-                                pos $ first pair
-                                point $ last pair
-                              recur
-                                conj acc $ render-grids-cell base (* unit $ pow 3 pos) (, color lean)
-                                c+ base $ c*
-                                  c* point $ do (; "\"dbt uses y+ as main direction, while cartesian coordinates uses x+. unclear about details...") ([] 0 -1)
-                                  [] (* unit $ pow 3 pos) (, 0)
-                                rest xs
-                        [] ([]) ([] 0 0) (, digits)
-                      get dict :dividend
-                      get dict :divisor
+                  g
+                    {} $ :position ([] 360 280)
+                    render-grids-cell ([] 0 0) 243 ([] 240 80 50) identity
+                    text (round quotient 8)
+                      {} (:color $ [] 0 0 50) (:position $ [] 0 0)
+                    , &
+                    apply
+                      fn (acc base xs)
+                        if
+                          or (empty? xs)
+                            <
+                              either (first $ first xs) (, -99)
+                              , -5
+                          , acc
+                          let
+                              pair $ first xs
+                              pos $ first pair
+                              point $ last pair
+                            recur
+                              conj acc $ render-grids-cell base (* unit $ pow 3 pos) (, color lean)
+                              c+ base $ c*
+                                c* point $ do (; "\"dbt uses y+ as main direction, while cartesian coordinates uses x+. unclear about details...") ([] 0 -1)
+                                [] (* unit $ pow 3 pos) (, 0)
+                              rest xs
+                      [] ([]) ([] 0 0) (, digits)
+                    get dict :dividend
+                    get dict :divisor
         |calc-dbt $ quote
           defn calc-dbt (position size)
             round $ &let
@@ -181,10 +180,9 @@
                             :dy 16
                             :rect? true
                             :data name
-                          text
-                            [] (* 100 idx) 0
-                            turn-string name
-                            {} $ :align :center
+                          text (turn-string name)
+                            {} (:align :center)
+                              :position $ [] (* 100 idx) 0
         |calc-pos $ quote
           defn calc-pos (p size)
             c+
@@ -229,11 +227,13 @@
                     g
                       {} (:position $ calc-pos sum unit) (:pure-shape? true)
                       {} (:type :arc) (:fill-color $ [] 0 0 100 0.5) (:radius 4)
-                      text ([] 8 0) (str "\"Sum:" sum) ({} $ :font-size 12)
+                      text (str "\"Sum:" sum)
+                        {} (:font-size 12) (:position $ [] 8 0)
                     g
                       {} (:position $ calc-pos product unit) (:pure-shape? true)
                       {} (:type :arc) (:fill-color $ [] 0 0 100 0.5) (:radius 4)
-                      text ([] 8 0) (str "\"Prod:" product) ({} $ :font-size 12)
+                      text (str "\"Prod:" product)
+                        {} (:font-size 12) (:position $ [] 8 0)
                 :actions $ {}
         |comp-container $ quote
           defcomp comp-container (store)
@@ -249,7 +249,7 @@
                   :division $ if (= :division $ :tab state) (comp-division $ >> states :division)
                 :render $ fn (dict)
                   g
-                    {} (:x 40) (:y 20)
+                    {} $ :position ([] 40 20)
                     get dict :tabs
                     g
                       {} $ :position ([] 0 80)
@@ -259,27 +259,26 @@
           defn render-grids-cell (base unit color lean)
             g
               {} $ :position (lean base)
-              {} (:type :ops)
-                :ops $ concat
-                  ->> (range 4)
-                    mapcat $ fn (i0)
-                      let
-                          i $ - i0 1.5
-                        []
-                          [] :move-to $ lean
-                            [] (* unit i) (* unit -1.5)
-                          [] :line-to $ lean
-                            [] (* unit i) (* unit 1.5)
-                  ->> (range 4)
-                    mapcat $ fn (i0)
-                      let
-                          i $ - i0 1.5
-                        []
-                          [] :move-to $ lean
-                            [] (* unit -1.5) (* unit i)
-                          [] :line-to $ lean
-                            [] (* unit 1.5) (* unit i)
-                  [] ([] :hsl color) ([] :stroke)
+              ops & $ concat
+                ->> (range 4)
+                  mapcat $ fn (i0)
+                    let
+                        i $ - i0 1.5
+                      []
+                        [] :move-to $ lean
+                          [] (* unit i) (* unit -1.5)
+                        [] :line-to $ lean
+                          [] (* unit i) (* unit 1.5)
+                ->> (range 4)
+                  mapcat $ fn (i0)
+                    let
+                        i $ - i0 1.5
+                      []
+                        [] :move-to $ lean
+                          [] (* unit -1.5) (* unit i)
+                        [] :line-to $ lean
+                          [] (* unit 1.5) (* unit i)
+                [] ([] :hsl color) ([] :stroke)
         |pick-color $ quote
           defn pick-color (idx)
             cond
