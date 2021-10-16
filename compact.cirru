@@ -11,7 +11,7 @@
           [] corokia.comp :refer $ [] comp-drag-point comp-slider
           [] corokia.complex :refer $ [] c* c+ c- rad-point
           [] memof.alias :refer $ [] memof-call
-          dbt.core :refer $ dbt dbt:add dbt:sub dbt:mul dbt:div dbt:from-float dbt:to-float dbt:format dbt:round
+          dbt.core :refer $ dbt dbt:add dbt:sub dbt:mul dbt:div dbt:from-float dbt:to-float dbt:format dbt:round dbt:to-digits dbt:from-digit
       :defs $ {}
         |render-grids-cell $ quote
           defn render-grids-cell (base unit color lean)
@@ -199,12 +199,10 @@
                 quotient $ dbt:div (dbt:from-float & dividend-value) (dbt:from-float & divisor-value)
                 lean $ fn (p) (c* p divisor-value)
                 color $ [] 0 0 90
-                digits
-                  ; ->> (dbt-digits quotient)
-                    map $ fn (pair)
-                      [] (first pair)
-                        dbt:to-float $ last pair
-                  []
+                digits $ -> (dbt:to-digits quotient)
+                  map $ fn (pair)
+                    [] (first pair)
+                      dbt:to-float $ dbt:from-digit (last pair)
               {}
                 :children $ {}
                   :divisor $ comp-drag-point (>> states :divisor) (:divisor state)
