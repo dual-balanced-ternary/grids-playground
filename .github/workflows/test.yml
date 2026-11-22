@@ -1,0 +1,46 @@
+name: Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions-rust-lang/setup-rust-toolchain@v2.0.0
+        with:
+          cache: false
+      - uses: calcit-lang/setup-calcit@v1.5.1
+        with:
+          deps-file: deps.cirru
+          tools: calcit,caps
+          caps-version: "0.1.1"
+      - name: Install native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libfontconfig1-dev libfreetype6-dev ninja-build xvfb xauth libgl1-mesa-dev libgl1-mesa-dri libxkbcommon-x11-0
+      - name: Resolve and check
+        run: |
+          set -euo pipefail
+          caps --strict --ci
+          caps verify --toolchain
+          test "$(calcit -v)" = "0.44.0"
+          test ! -e compact.cirru
+          calcit edit format
+          git diff --exit-code --quiet -- calcit.cirru
+          calcit --check-only --all-defs
+          calcit fix --workflow strict --verify --format json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
+          calcit analyze weak-types --only dynamic-method --summary-only --format json | jq -e '.data.summary.findings == 0'
+          calcit analyze weak-types --only deprecated-call --summary-only --format json | jq -e '.data.summary.calls == 0'
+          calcit test --require-match
+      - name: Run native canvas smoke
+        timeout-minutes: 1
+        run: xvfb-run -a env CALCIT_PAINT_SMOKE_ONCE=1 calcit calcit.cirru

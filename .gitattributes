@@ -1,2 +1,1 @@
-
-calcit.cirru -diff linguist-generated
+calcit.cirru text diff -linguist-generated
