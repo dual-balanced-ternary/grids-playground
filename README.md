@@ -11,7 +11,7 @@ caps --strict
 calcit calcit.cirru
 ```
 
-依赖使用 Corokia 0.2.7、Calcit DBT 0.1.9 和 Paint 0.2.15；Caps 会为当前平台构建原生模块。macOS 使用 Rust 1.94 遇到动态库 `mis-aligned LINKEDIT string pool` 时，按 [Paint 的说明](https://github.com/calcit-lang/calcit-paint#calcit-paint) 设置 `CARGO_PROFILE_RELEASE_STRIP=false` 后重新安装依赖，或升级 Rust。
+依赖使用 Corokia 0.2.7、Calcit DBT 0.1.10 和 Paint 0.2.15；Caps 会为当前平台构建原生模块。macOS 使用 Rust 1.94 遇到动态库 `mis-aligned LINKEDIT string pool` 时，按 [Paint 的说明](https://github.com/calcit-lang/calcit-paint#calcit-paint) 设置 `CARGO_PROFILE_RELEASE_STRIP=false` 后重新安装依赖，或升级 Rust。
 
 ## 验证
 
