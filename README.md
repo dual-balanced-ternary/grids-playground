@@ -4,14 +4,14 @@
 
 ## 运行
 
-项目使用正式 Calcit 0.44.0、Caps 和 Rust。安装平台所需的 Skia / 窗口系统开发库后：
+项目使用正式 Calcit 0.45.1、Caps 和 Rust。安装平台所需的 Skia / 窗口系统开发库后：
 
 ```bash
 caps --strict
 calcit calcit.cirru
 ```
 
-依赖使用 Corokia 0.2.7、Calcit DBT 0.1.10 和 Paint 0.2.15；Caps 会为当前平台构建原生模块。macOS 使用 Rust 1.94 遇到动态库 `mis-aligned LINKEDIT string pool` 时，按 [Paint 的说明](https://github.com/calcit-lang/calcit-paint#calcit-paint) 设置 `CARGO_PROFILE_RELEASE_STRIP=false` 后重新安装依赖，或升级 Rust。
+依赖使用 Corokia 0.2.8、Calcit DBT 0.1.11 和 Paint 0.2.16；Caps 会为当前平台构建原生模块。Paint 0.2.16 已调整发布构建配置，以避免已确认的 macOS 动态库加载问题。
 
 ## 验证
 
