@@ -4,14 +4,14 @@
 
 ## 运行
 
-项目使用正式 Calcit 0.45.1、Caps 和 Rust。安装平台所需的 Skia / 窗口系统开发库后：
+项目使用正式 Calcit 0.46.0、Caps 和 Rust。安装平台所需的 Skia / 窗口系统开发库后：
 
 ```bash
 caps --strict
 calcit calcit.cirru
 ```
 
-依赖使用 Corokia 0.2.8、Calcit DBT 0.1.11 和 Paint 0.2.16；Caps 会为当前平台构建原生模块。Paint 0.2.16 已调整发布构建配置，以避免已确认的 macOS 动态库加载问题。
+依赖使用 Corokia 0.2.9、Calcit DBT 0.1.12 和 Paint 0.2.16；Caps 会为当前平台构建原生模块。Paint 0.2.16 已调整发布构建配置，以避免已确认的 macOS 动态库加载问题。
 
 ## 验证
 
